@@ -39,6 +39,7 @@ app.post("/api/users/register", async (req, res) => {
     };
     res.status(201).json(payload);
   } catch (err) {
+    //11000 is the error code for duplicate keys
     if (err.code === 11000) {
       return res.status(400).send("Username or email is already in use");
     }
@@ -78,25 +79,6 @@ app.post("/api/users/login", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send("Error: " + err.message);
-  }
-});
-
-// endpoint where we will check our token
-app.post("/api/users/token", (req, res) => {
-  let token = req.headers.authorization;
-
-  if (token) {
-    token = token.split(" ").pop().trim();
-  }
-  if (!token) {
-    return res.status(401).json({ message: "No token found!" });
-  }
-  try {
-    const { data } = jwt.verify(token, secret, { maxAge: "2h" });
-    req.user = data;
-    res.status(200).send("Token Verified! You are allowed in the Park!");
-  } catch {
-    return res.status(401).json({ message: "Invalid token!" });
   }
 });
 
